@@ -16,7 +16,7 @@ public class SinkService implements InitializingBean {
 //    private List<Integer> numberList = Lists.newArrayList();
 
     Sinks.Many<String> unicastSink;
-    private Flux<String> fluxView;
+    public Flux<String> fluxView;
 
     public static void main(String[] args) throws Exception {
         new SinkService().afterPropertiesSet();
