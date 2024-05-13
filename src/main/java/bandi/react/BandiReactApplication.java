@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan( basePackages ={ "bandi.react.mine"})
+@ComponentScan( basePackages ={ "bandi.react.mine", "bandi.react.core"})
 @SpringBootApplication
 public class BandiReactApplication {
 

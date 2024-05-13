@@ -20,6 +20,6 @@ public class SinkController {
 
     @GetMapping("/events")
     public Flux<ServerSentEvent<String>> events() {
-        return sinkService.fluxView.map(event -> ServerSentEvent.builder(event).build());
+        return sinkService.sinkManyUnicast();
     }
 }

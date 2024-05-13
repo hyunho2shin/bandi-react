@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
@@ -22,14 +21,14 @@ public class SinkService implements InitializingBean {
         new SinkService().afterPropertiesSet();
     }
 
-    @GetMapping("/events")
-    public Flux<ServerSentEvent<String>> events() {
-        return fluxView.map(event -> ServerSentEvent.builder(event).build());
+    public Flux<ServerSentEvent<String>> sinkManyUnicast() {
+        return this.fluxView.map(event -> ServerSentEvent.builder(event).build());
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.unicastSink = Sinks.many().unicast().onBackpressureBuffer();
+//        this.unicastSink = Sinks.many().unicast().onBackpressureBuffer();
+        this.unicastSink = Sinks.many().multicast().onBackpressureBuffer();
         this.fluxView = unicastSink.asFlux();
 
         this.simulateEvents();
