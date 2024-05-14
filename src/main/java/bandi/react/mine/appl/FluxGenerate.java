@@ -22,11 +22,12 @@ public class FluxGenerate {
     main thread execute
     */
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         System.out.println("start");
 //        new FluxGenerate().generate01();
 //        new FluxGenerate().generate02();
-        new FluxGenerate().generate02obj();
+//        new FluxGenerate().generate02obj();
+        new FluxGenerate().generate03();
         System.out.println("end");
 
         /*while(true) {
@@ -34,7 +35,7 @@ public class FluxGenerate {
         }*/
     }
 
-    public void generate01() throws Exception {
+    public void generate01() {
         /*
         Programmatically create a Flux by generating signals one-by-one via a consumer callback.
          > consumer 콜백을 통해 한 번에 한 개씩 신호를 생성하여 Flux를 프로그래밍 방식으로 생성합니다.
@@ -60,10 +61,10 @@ public class FluxGenerate {
         .subscribe();
     }
 
-    public void generate02() throws Exception {
+    public void generate02() {
         /*
         Programmatically create a Flux by generating signals one-by-one via a consumer callback and some state.
-         > 콜백(callback) 및 상태(state)를 사용하여 신호를 하나씩 생성하여 Flux를 프로그래밍 방식으로 생성한다.
+         > consumer 콜백(callback) 및 상태(state)를 사용하여 신호를 하나씩 생성하여 Flux를 프로그래밍 방식으로 생성한다.
 
         params
             Callable<S> stateSupplier,
@@ -88,7 +89,7 @@ public class FluxGenerate {
     }
 
     private BigInteger fibonacci = new BigInteger("0");
-    public void generate02obj() throws Exception {
+    public void generate02obj() {
         // fibonacci 출력
         Flux.generate(
                         () -> new BigInteger("1"), // 초기시작값 정의
@@ -103,6 +104,46 @@ public class FluxGenerate {
                         })
                 .log()
                 .subscribe();
+    }
+
+
+    private int count = 0;
+    public void generate03() {
+        /*
+        Programmatically create a Flux by generating signals one-by-one via a consumer callback and some state,
+        with a final cleanup callback.
+         > consumer 콜백(callback) 및 상태(state)를 사용하여 신호를 하나씩 생성하여 Flux를 프로그래밍 방식으로 생성하고
+         > 최종 정리 콜백
+         > 종료시(complete) 마지막 state를 consumer를 호출하고 종료.
+          > 데이터베이스 연결 또는 종료 프로세스의 끝에서 처리되어야 하는 다른 리소스가 포함된 경우,
+          > Consumer 람다는 연결을 닫거나 프로세스 종료 후 완료해야 하는 모든 작업을 처리할 수 있습니다
+
+        params
+            Callable<S> stateSupplier,
+            BiFunction<S,SynchronousSink<T>,S> generator,
+            Consumer<? super S> stateConsumer
+        */
+
+        Flux.generate(
+            () -> new BigInteger("1"), // 초기시작값 정의
+            (state, sink) -> {
+                this.sleep(1000l);
+                count++;
+
+                sink.next(state.toString());
+
+                if (count == 10) {
+                    sink.complete();
+                }
+
+                BigInteger sum = new BigInteger(fibonacci.toString()).add(state);
+                fibonacci = state;
+                return sum;
+            },
+            (state) -> System.out.println("state: " + state.toString())
+            )
+        .log()
+        .subscribe();
     }
 
     public void sleep(long time) {
