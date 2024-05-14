@@ -22,7 +22,9 @@ public class SinkService implements InitializingBean {
     }
 
     public Flux<ServerSentEvent<String>> sinkManyUnicast() {
-        return this.fluxView.map(event -> ServerSentEvent.builder(event).build());
+        return this.fluxView
+                .map(event -> ServerSentEvent.builder(event).build())
+                .log();
     }
 
     @Override
